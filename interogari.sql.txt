@@ -1,0 +1,45 @@
+----3.
+a)
+SELECT * 
+FROM Factura
+WHERE total > 750
+ORDER BY data DESC, total ASC; 
+
+--b)
+SELECT denumire
+FROM Localitate
+WHERE denumire LIKE '%a';
+
+----4.
+--a)
+SELECT DISTINCT c.nume
+FROM Client c Join Factura f ON( c.id_c=f.id_c)
+WHERE EXTRACT(YEAR FROM f.data) =2019; 
+
+--b)
+SELECT CONCAT( '( ', CONCAT( d1.id_l, CONCAT(',',CONCAT(d2.id_l, ' )')))) AS "Pereche"
+FROM Difuzare d1 JOIN Difuzare d2 ON( d1.id_l!= d2.id_l)
+WHERE d1.id_f = d2.id_f AND  d1.id_l < d2.id_l;
+
+----5.
+--a)
+SELECT denumire
+FROM Localitate 
+WHERE id_l IN (SELECT id_l FROM Difuzare WHERE EXTRACT(YEAR FROM datai)=2019 AND (EXTRACT(MONTH FROM datai)=9 OR EXTRACT(MONTH FROM datas)=9) );
+
+--b) 
+SELECT nume
+FROM Client 
+WHERE id_c IN (SELECT id_c  FROM Factura WHERE EXTRACT(YEAR FROM data)=2019 AND total >=ALL (SELECT total FROM Factura WHERE EXTRACT(YEAR FROM data)=2019 ));
+
+----6.
+--a)
+SELECT d.id_l , EXTRACT(DAY FROM f.data) AS zi, SUM(f.nr_slideuri) AS "Numar slideuri"
+FROM Difuzare d JOIN Factura f ON(d.id_f=f.id_f)
+WHERE EXTRACT(MONTH FROM f.data)=9 AND EXTRACT(YEAR FROM f.data)=2019
+GROUP BY ROLLUP(d.id_l, EXTRACT(DAY FROM f.data));
+
+--b)
+SELECT AVG(total)
+FROM Factura
+WHERE EXTRACT(YEAR FROM data)=2018;
